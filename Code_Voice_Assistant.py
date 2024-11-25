@@ -4,17 +4,19 @@ import gradio as gr
 from dotenv import load_dotenv
 import os
 
-# Set API Key directly in the code (For testing purposes)
-openai.api_key = "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"
+# Load environment variables from .env file
+load_dotenv()
+
+# Set the API key from the .env file
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Initialize TTS engine
 engine = pyttsx3.init()
 
-# Function to transcribe audio to text using Whisper (OpenAI version 0.28)
+# Transcribe audio to text using Whisper (OpenAI version 0.28)
 def transcribe_audio(audio_file_path):
     try:
         with open(audio_file_path, "rb") as audio_file:
-            # Correct transcription method for OpenAI version <= 0.28
             transcription = openai.Audio.transcribe(
                 model="whisper-1", 
                 file=audio_file
@@ -23,7 +25,7 @@ def transcribe_audio(audio_file_path):
     except Exception as e:
         return f"Transcription error: {e}"
 
-# Function to generate response using GPT, including feedback, translation, and intent recognition
+# Generate response using GPT, including feedback, translation, and intent recognition
 def generate_response(user_input):
     try:
         # Intent recognition for translation requests
@@ -62,7 +64,7 @@ def generate_response(user_input):
     except Exception as e:
         return f"Error: {e}"
 
-# Function to convert text to speech
+# Convert text to speech
 def speak_text(text):
     engine.say(text)
     engine.runAndWait()
@@ -70,16 +72,16 @@ def speak_text(text):
 # Main function for Gradio interface
 def voice_assistant(audio_file):
     try:
-        # Step 1: Transcribe user audio
+        # Transcribe user audio
         user_input = transcribe_audio(audio_file)
 
         if not user_input or "error" in user_input.lower():
             return f"Transcription failed: {user_input}"
 
-        # Step 2: Generate GPT response
+        # Generate GPT response
         assistant_reply = generate_response(user_input)
 
-        # Step 3: Speak the response
+        # Speak the response
         speak_text(assistant_reply)
 
         return f"User: {user_input}\nAssistant: {assistant_reply}"
@@ -95,6 +97,5 @@ interface = gr.Interface(
     title="AI Voice Assistant"
 )
 
-# Launch the interface
 if __name__ == "__main__":
     interface.launch(share=True)
