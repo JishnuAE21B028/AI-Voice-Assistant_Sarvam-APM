@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import os
 
 # Set API Key directly in the code (For testing purposes)
-openai.api_key = "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"
+openai.api_key = "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"
 
 # Initialize TTS engine
 engine = pyttsx3.init()
